@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CropImageView">
+        <attr name="civ_img_src" format="reference" />
+        <attr name="civ_bg_color" format="reference|color" />
+        <attr name="civ_make_color" format="reference|color" />
+
+        <!--网格-->
+        <attr name="civ_grid_min_size" format="dimension" />
+        <attr name="civ_grid_stroke" format="dimension" />
+        <attr name="civ_grid_color" format="reference|color" />
+
+        <!--网格分割线-->
+        <attr name="civ_grid_line_stroke" format="dimension" />
+        <attr name="civ_gird_row_part" format="integer"/>
+        <attr name="civ_gird_column_part" format="integer"/>
+        <attr name="civ_grid_line_mode">
+            <enum name="show_always" value="0" />
+            <enum name="show_on_touch" value="1" />
+            <enum name="not_show" value="2" />
+        </attr>
+
+        <!--拖拽点-->
+        <attr name="civ_drag_point_size" format="dimension" />
+        <attr name="civ_drag_point_padding" format="dimension" />
+        <attr name="civ_drag_point_show" format="boolean" />
+
+        <!--裁剪-->
+        <attr name="civ_crop_enabled" format="boolean" />
+        <attr name="civ_crop_mode">
+            <enum name="square" value="0" />
+            <enum name="circle" value="1" />
+            <enum name="circle_square" value="2" />
+            <enum name="fit_image" value="3" />
+            <enum name="ratio_4_3" value="4" />
+            <enum name="ratio_3_4" value="5" />
+            <enum name="ratio_16_9" value="6" />
+            <enum name="ratio_9_16" value="7" />
+            <enum name="free" value="8" />
+            <enum name="custom" value="9" />
+        </attr>
+
+        <!--动画-->
+        <attr name="civ_anim_enabled" format="boolean" />
+        <attr name="civ_anim_duration" format="integer" />
+  </declare-styleable>
+</resources>

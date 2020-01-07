@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="crop_mode">
+        <item>SQUARE</item>
+        <item>CIRCLE</item>
+        <item>CIRCLE_SQUARE</item>
+        <item>FIT_IMAGE</item>
+        <item>RATIO_4_3</item>
+        <item>RATIO_3_4</item>
+        <item>RATIO_16_9</item>
+        <item>RATIO_9_16</item>
+        <item>FREE</item>
+        <item>CUSTOM</item>
+    </string-array>
+
+    <string-array name="angle">
+        <item>ROTATE_90D</item>
+        <item>ROTATE_180D</item>
+        <item>ROTATE_270D</item>
+        <item>ROTATE_M90D</item>
+        <item>ROTATE_M180D</item>
+        <item>ROTATE_M270D</item>
+    </string-array>
+
+    <string-array name="angle_value">
+        <item>90</item>
+        <item>180</item>
+        <item>270</item>
+        <item>-90</item>
+        <item>-180</item>
+        <item>-270</item>
+    </string-array>
+</resources>
