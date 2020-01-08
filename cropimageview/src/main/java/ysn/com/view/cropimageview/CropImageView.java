@@ -1501,35 +1501,41 @@ public class CropImageView extends ImageView {
      * 加载图片
      */
     public void load(final Uri sourceUri, final boolean useThumbnail) {
-        executor.submit(() -> {
-            try {
-                isLoading.set(true);
-                CropImageView.this.sourceUri = sourceUri;
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    isLoading.set(true);
+                    CropImageView.this.sourceUri = sourceUri;
 
-                if (useThumbnail) {
-                    setThumbnail(sourceUri);
-                }
-
-                final Bitmap bitmap = getImage(sourceUri);
-                handler.post(() -> {
-                    angle = exifRotation;
-                    setImageDrawableInternal(new BitmapDrawable(getResources(), bitmap));
-                    if (onCropMultiListener == null) {
-                        if (onLoadListener!=null) {
-                            onLoadListener.onLoadSuccess();
-                        }
-                    } else {
-                        onCropMultiListener.onLoadSuccess();
+                    if (useThumbnail) {
+                        setThumbnail(sourceUri);
                     }
-                });
-            } catch (Exception e) {
-                if (onCropMultiListener == null) {
-                    postErrorOnMainThread(onLoadListener, e);
-                } else {
-                    postErrorOnMainThread(onCropMultiListener, e);
+
+                    final Bitmap bitmap = getImage(sourceUri);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            angle = exifRotation;
+                            setImageDrawableInternal(new BitmapDrawable(getResources(), bitmap));
+                            if (onCropMultiListener == null) {
+                                if (onLoadListener != null) {
+                                    onLoadListener.onLoadSuccess();
+                                }
+                            } else {
+                                onCropMultiListener.onLoadSuccess();
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    if (onCropMultiListener == null) {
+                        postErrorOnMainThread(onLoadListener, e);
+                    } else {
+                        postErrorOnMainThread(onCropMultiListener, e);
+                    }
+                } finally {
+                    isLoading.set(false);
                 }
-            } finally {
-                isLoading.set(false);
             }
         });
     }
@@ -1539,9 +1545,12 @@ public class CropImageView extends ImageView {
         if (thumb == null) {
             return;
         }
-        handler.post(() -> {
-            angle = exifRotation;
-            setImageDrawableInternal(new BitmapDrawable(getResources(), thumb));
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                angle = exifRotation;
+                setImageDrawableInternal(new BitmapDrawable(getResources(), thumb));
+            }
         });
     }
 
@@ -1579,7 +1588,12 @@ public class CropImageView extends ImageView {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             baseCallback.onError(e);
         } else {
-            handler.post(() -> baseCallback.onError(e));
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    baseCallback.onError(e);
+                }
+            });
         }
     }
 
@@ -1598,39 +1612,48 @@ public class CropImageView extends ImageView {
     public void crop(final Uri saveUri) {
         this.saveUri = saveUri;
 
-        executor.submit(() -> {
-            Bitmap cropBitmap;
-            try {
-                isCropping.set(Boolean.TRUE);
-                cropBitmap = cropImage();
-                final Bitmap tempCropBitmap = cropBitmap;
-                handler.post(() -> {
-                    if (onCropMultiListener == null) {
-                        if (onCropListener != null) {
-                            onCropListener.onCropSuccess(tempCropBitmap);
-                        }
-                    } else {
-                        onCropMultiListener.onCropSuccess(tempCropBitmap);
-                    }
-                });
-
-                // 保存截图
-                if (saveUri != null) {
-                    Utils.saveImage(getContext(), cropBitmap, sourceUri, saveUri, compressFormat, compressQuality);
-                    handler.post(() -> {
-                        if (onCropMultiListener == null) {
-                            if (onCropSaveListener != null) {
-                                onCropSaveListener.onCropSaveSuccess(saveUri);
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap cropBitmap;
+                try {
+                    isCropping.set(Boolean.TRUE);
+                    cropBitmap = cropImage();
+                    final Bitmap tempCropBitmap = cropBitmap;
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (onCropMultiListener == null) {
+                                if (onCropListener != null) {
+                                    onCropListener.onCropSuccess(tempCropBitmap);
+                                }
+                            } else {
+                                onCropMultiListener.onCropSuccess(tempCropBitmap);
                             }
-                        } else {
-                            onCropMultiListener.onCropSaveSuccess(saveUri);
                         }
                     });
+
+                    // 保存截图
+                    if (saveUri != null) {
+                        Utils.saveImage(getContext(), cropBitmap, sourceUri, saveUri, compressFormat, compressQuality);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (onCropMultiListener == null) {
+                                    if (onCropSaveListener != null) {
+                                        onCropSaveListener.onCropSaveSuccess(saveUri);
+                                    }
+                                } else {
+                                    onCropMultiListener.onCropSaveSuccess(saveUri);
+                                }
+                            }
+                        });
+                    }
+                } catch (final Exception e) {
+                    startCropError(e);
+                } finally {
+                    isCropping.set(Boolean.FALSE);
                 }
-            } catch (final Exception e) {
-                startCropError(e);
-            } finally {
-                isCropping.set(Boolean.FALSE);
             }
         });
     }
@@ -1638,7 +1661,7 @@ public class CropImageView extends ImageView {
     /**
      * 裁剪错误处理
      */
-    private void startCropError(Exception e) {
+    private void startCropError(final Exception e) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             if (onCropMultiListener == null) {
                 postErrorOnMainThread(onCropListener, e);
@@ -1647,12 +1670,15 @@ public class CropImageView extends ImageView {
                 postErrorOnMainThread(onCropMultiListener, e);
             }
         } else {
-            handler.post(() -> {
-                if (onCropMultiListener == null) {
-                    postErrorOnMainThread(onCropListener, e);
-                    postErrorOnMainThread(onCropSaveListener, e);
-                } else {
-                    postErrorOnMainThread(onCropMultiListener, e);
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (onCropMultiListener == null) {
+                        postErrorOnMainThread(onCropListener, e);
+                        postErrorOnMainThread(onCropSaveListener, e);
+                    } else {
+                        postErrorOnMainThread(onCropMultiListener, e);
+                    }
                 }
             });
         }

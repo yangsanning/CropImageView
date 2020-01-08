@@ -12,6 +12,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+
 import java.util.Arrays;
 
 import ysn.com.view.cropimageview.CropImageView;
@@ -53,8 +55,12 @@ public class CropActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initCropModeAdapter() {
         StringAdapter cropModeAdapter = new StringAdapter();
-        cropModeAdapter.setOnItemClickListener((adapter, view, position) ->
-            cropImageView.setCropMode(CropMode.getValue(position)));
+        cropModeAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                cropImageView.setCropMode(CropMode.getValue(position));
+            }
+        });
         cropModeRecyclerView = findViewById(R.id.crop_activity_crop_mode_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayout.HORIZONTAL);
@@ -64,10 +70,14 @@ public class CropActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initAngleAdapter() {
-        int[] angles = getResources().getIntArray(R.array.angle_value);
+        final int[] angles = getResources().getIntArray(R.array.angle_value);
         StringAdapter angleAdapter = new StringAdapter();
-        angleAdapter.setOnItemClickListener((adapter, view, position) ->
-            cropImageView.rotateImage(RotateAngle.getValue(angles[position])));
+        angleAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                cropImageView.rotateImage(RotateAngle.getValue(angles[position]));
+            }
+        });
         angleRecyclerView = findViewById(R.id.crop_activity_angle_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayout.HORIZONTAL);

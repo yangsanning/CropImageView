@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -32,11 +33,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             .subscribeOn(AndroidSchedulers.mainThread())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(granted -> {
-                if (granted) {
-                    setViewClickListener();
-                } else {
-                    Toast.makeText(this, "权限不足", Toast.LENGTH_SHORT).show();
+            .subscribe(new Consumer<Boolean>() {
+                @Override
+                public void accept(Boolean granted) throws Exception {
+                    if (granted) {
+                        setViewClickListener();
+                    } else {
+                        Toast.makeText(MainActivity.this, "权限不足", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
     }
