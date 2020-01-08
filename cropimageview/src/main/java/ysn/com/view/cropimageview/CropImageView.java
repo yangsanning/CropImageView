@@ -1515,7 +1515,9 @@ public class CropImageView extends ImageView {
                     angle = exifRotation;
                     setImageDrawableInternal(new BitmapDrawable(getResources(), bitmap));
                     if (onCropMultiListener == null) {
-                        onLoadListener.onLoadSuccess();
+                        if (onLoadListener!=null) {
+                            onLoadListener.onLoadSuccess();
+                        }
                     } else {
                         onCropMultiListener.onLoadSuccess();
                     }
